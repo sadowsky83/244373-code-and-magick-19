@@ -12,14 +12,12 @@ function drawRect(ctx, rect) {
 
 // вычисляем максимальное значение в массиве times
 function getMaxTime(times) {
-  var max = -Infinity;
+  var max = times[0];
   for (var i = 0; i < times.length; i++) {
-    var time = times[i];
-    if (time > max) {
-      max = time;
+    if (times[i] > max) {
+      max = times[i];
     }
   }
-
   return max;
 }
 
@@ -66,16 +64,14 @@ window.renderStatistics = function (ctx, names, times) {
 
   // цикл перебора значений в массивах names и times
   for (var i = 0; i < times.length; i++) {
-    var name = names[i];
-    var time = times[i];
-    var height = step * time;
+    var height = step * times[i];
 
     // вычисляем координаты X и Y для начала гистограммы
     var indentX = histoX + columnIndent * i;
     var indentY = histoY + statisHeight - height;
 
     // выводим время с отступом от колонок на 10
-    ctx.fillText(time.toFixed(0), indentX, indentY - 10);
+    ctx.fillText(times[i].toFixed(0), indentX, indentY - 10);
 
     // объявляем колонку как переменную со значениями координат и высоты
     var column = {
@@ -86,11 +82,11 @@ window.renderStatistics = function (ctx, names, times) {
     };
 
     // выводим колонки игроков случайного синего цвета, для игрока "Вы" колонка красного цвета
-    column.fillColor = name === 'Вы' ? 'rgba(255, 0, 0, 1)' : getRandomBlueColor();
+    column.fillColor = names[i] === 'Вы' ? 'rgba(255, 0, 0, 1)' : getRandomBlueColor();
     drawRect(ctx, column);
 
     // рисуем имя игрока
     ctx.fillStyle = 'black';
-    ctx.fillText(name, indentX, textY);
+    ctx.fillText(names[i], indentX, textY);
   }
 };
