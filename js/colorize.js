@@ -42,4 +42,10 @@
     inputFireball.value = color;
   });
 
+  window.colorize = {
+    coatColorsArr: coatColorsArr,
+    eyesColorsArr: eyesColorsArr,
+    fireballColorsArr: fireballColorsArr
+  };
+
 })();
