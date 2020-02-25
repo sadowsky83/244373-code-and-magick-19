@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var setup = document.querySelector('.setup');
   var upload = document.querySelector('.upload');
 

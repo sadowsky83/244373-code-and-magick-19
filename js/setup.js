@@ -1,58 +1,52 @@
 'use strict';
 
-// массив имен
-var namesArr = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
+(function () {
 
-// массив фамилий
-var surnamesArr = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
+  var setup = document.querySelector('.setup');
+  var setupWizardForm = setup.querySelector('.setup-wizard-form');
 
-// выбор случайного элемента массива
-function getRandomElement(arrName) {
-  return arrName[(Math.floor(arrName.length * (Math.random())))];
-}
+  var maxSimilarWizardCount = 4;
 
-// массив волшебников
-var wizards = [
-  {
-    name: getRandomElement(namesArr) + ' ' + getRandomElement(surnamesArr),
-    coatColor: getRandomElement(window.colorize.coatColorsArr),
-    eyesColor: getRandomElement(window.colorize.eyesColorsArr)
-  },
-  {
-    name: getRandomElement(namesArr) + ' ' + getRandomElement(surnamesArr),
-    coatColor: getRandomElement(window.colorize.coatColorsArr),
-    eyesColor: getRandomElement(window.colorize.eyesColorsArr)
-  },
-  {
-    name: getRandomElement(namesArr) + ' ' + getRandomElement(surnamesArr),
-    coatColor: getRandomElement(window.colorize.coatColorsArr),
-    eyesColor: getRandomElement(window.colorize.eyesColorsArr)
-  },
-  {
-    name: getRandomElement(namesArr) + ' ' + getRandomElement(surnamesArr),
-    coatColor: getRandomElement(window.colorize.coatColorsArr),
-    eyesColor: getRandomElement(window.colorize.eyesColorsArr)
+  setupWizardForm.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(setupWizardForm), function () {
+      setup.classList.add('hidden');
+    });
+    evt.preventDefault();
+  });
+
+  // отрисовка волшебника
+  function renderWizard(wizard) {
+    var wizardElement = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item').cloneNode(true);
+
+    wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
+    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
+    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEyes;
+
+    return wizardElement;
   }
-];
 
-// отрисовка волшебника
-function renderWizard(wizard) {
-  var wizardElement = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item').cloneNode(true);
+  // создание фрагмента
+  function onSuccessLoad(wizards) {
+    var fragment = document.createDocumentFragment();
 
-  wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-  wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
-  wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
+    for (var i = 0; i < maxSimilarWizardCount; i++) {
+      fragment.appendChild(renderWizard(wizards[i]));
+    }
 
-  return wizardElement;
-}
+    document.querySelector('.setup-similar-list').appendChild(fragment);
+    document.querySelector('.setup-similar').classList.remove('hidden');
+  }
 
-// создание фрагмента
-var fragment = document.createDocumentFragment();
+  function onErrorLoad(errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  }
 
-for (var i = 0; i < wizards.length; i++) {
-  fragment.appendChild(renderWizard(wizards[i]));
-}
-
-document.querySelector('.setup-similar-list').appendChild(fragment);
-
-document.querySelector('.setup-similar').classList.remove('hidden');
+  window.backend.load(onSuccessLoad, onErrorLoad);
+})();
